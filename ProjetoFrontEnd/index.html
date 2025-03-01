@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script defer src="script.js"></script>
+</head>
+<body>
+
+    <!-- Botão para abrir o menu -->
+    <button id="menu-toggle">☰</button>
+
+    <!-- Menu de navegação (toggle) -->
+    <nav id="sidebar">
+        <h2>Menu</h2>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="#" class="nav-link text-white" onclick="loadPage('inicio')">Início</a></li>
+            <li class="nav-item"><a href="#" class="nav-link text-white" onclick="loadPage('funcionarios')">Funcionários</a></li>
+            <li class="nav-item"><a href="#" class="nav-link text-white" onclick="loadPage('sala_vacinas')">Sala de Vacinas</a></li>
+            <li class="nav-item"><a href="#" class="nav-link text-white" id="auth-button" onclick="toggleAuth()">🔑 Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Conteúdo da Página -->
+    <div class="content" id="content">
+        <h2>Bem-vindo</h2>
+        <p>Selecione uma opção no menu para continuar.</p>
+    </div>
+
+    <!-- Modal de Login/Cadastro -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login / Cadastro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="email" id="email" class="form-control mb-2" placeholder="Digite seu e-mail">
+                    <input type="password" id="password" class="form-control mb-2" placeholder="Digite sua senha">
+                </div>
+                <div class="modal-footer">
+                    <button onclick="register()" class="btn btn-primary">Criar Conta</button>
+                    <button onclick="login()" class="btn btn-success">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
