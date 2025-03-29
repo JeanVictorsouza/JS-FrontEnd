@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Vacinas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Cadastro de Vacinas</h2>
+        <form id="vacinaForm" class="mb-3">
+            <div class="row">
+                <div class="col-md-3"><br>
+                    <input type="text" id="codigo" class="form-control" placeholder="Código da Vacina" required>
+                </div>
+                <div class="col-md-3"><br>
+                    <input type="text" id="nome" class="form-control" placeholder="Nome da Vacina" required>
+                </div>
+                <div class="col-md-2"><br>
+                    <input type="date" id="data" class="form-control" required>
+                </div>
+                <div class="col-md-2"><br>
+                    <input type="number" id="quantidade" class="form-control" placeholder="Quantidade" required min="1">
+                </div>
+                <div class="col-md-2"><br>
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </div>
+            </div>
+        </form>
+        <br>
+        <input type="text" id="search" class="form-control mb-3" placeholder="Buscar por código ou nome..." onkeyup="filtrarVacinas()">
+        
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Quantidade</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabelaVacinas">
+                <!-- Dados inseridos aqui -->
+            </tbody>
+        </table>
+        
+        <p><strong>Total de Vacinas:</strong> <span id="totalVacinas">0</span></p>
+    </div>
+    
+    <script src="scriptSalaVacina.js"></script>
+</body>
+</html>
