@@ -6,7 +6,21 @@ document.getElementById("funcionarioForm").addEventListener("submit", function(e
     let nascimento = document.getElementById("nascimento").value;
     let registro = document.getElementById("registro").value.trim();
     
-    if (cpf && nome && nascimento && registro) {
+    // Verifica se estamos editando uma linha existente
+    const linhaEditando = document.querySelector(".editando");
+    
+    if (linhaEditando) {
+        // Atualiza a linha existente
+        linhaEditando.cells[0].textContent = cpf;
+        linhaEditando.cells[1].textContent = nome;
+        linhaEditando.cells[2].textContent = nascimento;
+        linhaEditando.cells[3].textContent = registro;
+        
+        // Remove a classe de edição e restaura o botão
+        linhaEditando.classList.remove("editando");
+        document.querySelector("button[type='submit']").textContent = "Adicionar";
+    } else if (cpf && nome && nascimento && registro) {
+        // Adiciona nova linha
         let tabela = document.getElementById("tabelaFuncionarios");
         let newRow = tabela.insertRow();
 
@@ -16,13 +30,14 @@ document.getElementById("funcionarioForm").addEventListener("submit", function(e
             <td>${nascimento}</td>
             <td>${registro}</td>
             <td>
+                <button class="btn btn-warning btn-sm" onclick="editarFuncionario(this)">Editar</button>
                 <button class="btn btn-danger btn-sm" onclick="removerFuncionario(this)">Excluir</button>
             </td>
         `;
-        
-        atualizarTotal();
-        document.getElementById("funcionarioForm").reset();
     }
+    
+    atualizarTotal();
+    document.getElementById("funcionarioForm").reset();
 });
 
 function filtrarFuncionarios() {
@@ -46,6 +61,26 @@ function removerFuncionario(botao) {
         linha.remove();
         atualizarTotal();
     }
+}
+
+function editarFuncionario(botao) {
+    const linha = botao.parentElement.parentElement;
+    const celulas = linha.cells;
+    
+    // Preenche o formulário com os dados da linha
+    document.getElementById("cpf").value = celulas[0].textContent;
+    document.getElementById("nome").value = celulas[1].textContent;
+    document.getElementById("nascimento").value = celulas[2].textContent;
+    document.getElementById("registro").value = celulas[3].textContent;
+    
+    // Marca a linha como sendo editada
+    linha.classList.add("editando");
+    
+    // Altera o texto do botão para indicar que está editando
+    document.querySelector("button[type='submit']").textContent = "Salvar Edição";
+    
+    // Rolagem suave até o formulário
+    document.getElementById("funcionarioForm").scrollIntoView({ behavior: 'smooth' });
 }
 
 function atualizarTotal() {

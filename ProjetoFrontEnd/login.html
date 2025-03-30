@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro e Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button id="menu-toggle">☰</button>
+
+    <div id="sidebar">
+        <h2>Menu</h2>
+        <ul>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="login.html">Cadastro/Login</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <h2>Bem-vindo!</h2>
+        <div class="button-container">
+            <button id="show-register">Cadastrar</button>
+            <button id="show-login">Entrar</button>
+        </div>
+
+        <!-- Formulário de Cadastro -->
+        <form id="register-form" class="hidden">
+            <h3>Cadastro de Usuário</h3>
+            <label for="name">Nome:</label>
+            <input type="text" id="name" required>
+
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" required>
+
+            <label for="password">Senha:</label>
+            <input type="password" id="password" required>
+
+            <label for="confirm-password">Confirme a Senha:</label>
+            <input type="password" id="confirm-password" required>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+
+        <!-- Formulário de Login -->
+        <form id="login-form" class="hidden">
+            <h3>Login</h3>
+            <label for="login-email">E-mail:</label>
+            <input type="email" id="login-email" required>
+
+            <label for="login-password">Senha:</label>
+            <input type="password" id="login-password" required>
+
+            <button type="submit">Entrar</button>
+        </form>
+
+        <p id="message"></p>
+    </div>
+
+    <script src="scriptLogin.js"></script>
+</body>
+</html>
