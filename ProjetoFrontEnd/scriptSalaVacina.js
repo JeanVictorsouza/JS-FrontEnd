@@ -1,3 +1,15 @@
+// Toggle do menu
+document.getElementById("menu-toggle").addEventListener("click", function() {
+    document.getElementById("sidebar").classList.toggle("active");
+    document.body.classList.toggle("sidebar-active");
+});
+
+// Navegação para o cartão de vacinas
+document.getElementById("btnVerCartao").addEventListener("click", function() {
+    window.location.href = "cartaoVacina.html";
+});
+
+// Função principal para cadastro de vacinas
 document.getElementById("vacinaForm").addEventListener("submit", function(event) {
     event.preventDefault();
     
@@ -6,6 +18,7 @@ document.getElementById("vacinaForm").addEventListener("submit", function(event)
     let data = document.getElementById("data").value;
     let quantidade = parseInt(document.getElementById("quantidade").value, 10);
     
+    // Validações básicas
     if (!/^[a-zA-Z0-9]+$/.test(codigo)) {
         alert("O código da vacina deve conter apenas letras e números.");
         return;
@@ -23,65 +36,90 @@ document.getElementById("vacinaForm").addEventListener("submit", function(event)
         return;
     }
     
-    let tabela = document.getElementById("tabelaEstoque");
-    let newRow = tabela.insertRow();
-
-    newRow.innerHTML = `
-        <td>${codigo}</td> 
-        <td>${nome}</td>
-        <td>${data}</td>
-        <td class="quantidade">${quantidade}</td>
-        <td>
-            <button class="btn btn-success btn-sm" onclick="adicionarQuantidade(this)">+</button>
-            <button class="btn btn-danger btn-sm" onclick="removerVacina(this)">Excluir</button>
-        </td>
-    `;
+    // Cria o objeto da vacina
+    let novaVacina = {
+        codigo,
+        nome,
+        data,
+        quantidade,
+        dataRegistro: new Date().toISOString()
+    };
     
-    atualizarTotal();
+    // Adiciona ao localStorage
+    let vacinas = JSON.parse(localStorage.getItem('vacinas')) || [];
+    vacinas.push(novaVacina);
+    localStorage.setItem('vacinas', JSON.stringify(vacinas));
+    
+    // Atualiza a tabela
+    atualizarTabelaVacinas();
     document.getElementById("vacinaForm").reset();
 });
 
-document.getElementById("agendamentoForm").addEventListener("submit", function(event) {
-    event.preventDefault();
+// Atualiza a tabela com os dados do localStorage
+function atualizarTabelaVacinas() {
+    let tabela = document.getElementById("tabelaVacinas");
+    tabela.innerHTML = '';
     
-    let paciente = document.getElementById("paciente").value.trim();
-    let funcionario = document.getElementById("funcionario").value.trim();
-    let vacina = document.getElementById("vacinaAplicada").value.trim();
-    let dose = parseInt(document.getElementById("dose").value, 10);
-    let dataAgendada = document.getElementById("dataAgendada").value;
+    let vacinas = JSON.parse(localStorage.getItem('vacinas')) || [];
     
-    if (paciente.length < 3 || funcionario.length < 3) {
-        alert("Paciente e funcionário devem ter pelo menos 3 caracteres.");
-        return;
-    }
-    if (vacina.length < 3) {
-        alert("O nome da vacina é inválido.");
-        return;
-    }
-    if (dose <= 0 || isNaN(dose)) {
-        alert("A dose deve ser um número maior que zero.");
-        return;
-    }
-    if (new Date(dataAgendada) < new Date()) {
-        alert("A data agendada não pode estar no passado.");
-        return;
-    }
+    vacinas.forEach(vacina => {
+        let newRow = tabela.insertRow();
+        newRow.innerHTML = `
+            <td>${vacina.codigo}</td>
+            <td>${vacina.nome}</td>
+            <td>${formatarData(vacina.data)}</td>
+            <td class="quantidade">${vacina.quantidade}</td>
+            <td>
+                <button class="btn btn-success btn-sm" onclick="adicionarQuantidade(this)">+</button>
+                <button class="btn btn-danger btn-sm" onclick="removerVacina(this, '${vacina.codigo}')">Excluir</button>
+            </td>
+        `;
+    });
     
-    let tabela = document.getElementById("tabelaAgendamentos");
-    let newRow = tabela.insertRow();
-    newRow.innerHTML = `
-        <td>${funcionario}</td> 
-        <td>${paciente}</td>
-        <td>${vacina}</td>
-        <td>${dose}</td>
-        <td>${dataAgendada}</td>
-    `;
-    document.getElementById("agendamentoForm").reset();
-});
+    atualizarTotal();
+}
 
+// Função para formatar data
+function formatarData(dataString) {
+    const data = new Date(dataString);
+    return data.toLocaleDateString('pt-BR');
+}
+
+// Função para remover vacina
+function removerVacina(botao, codigoVacina) {
+    if (confirm("Tem certeza que deseja remover esta vacina?")) {
+        let vacinas = JSON.parse(localStorage.getItem('vacinas')) || [];
+        vacinas = vacinas.filter(v => v.codigo !== codigoVacina);
+        localStorage.setItem('vacinas', JSON.stringify(vacinas));
+        
+        botao.closest('tr').remove();
+        atualizarTotal();
+    }
+}
+
+// Função para adicionar quantidade
+function adicionarQuantidade(botao) {
+    let linha = botao.parentElement.parentElement;
+    let quantidadeCell = linha.querySelector(".quantidade");
+    let quantidade = parseInt(quantidadeCell.textContent, 10);
+    
+    quantidadeCell.textContent = quantidade + 1;
+    atualizarTotal();
+}
+
+// Função para atualizar o total
+function atualizarTotal() {
+    let total = 0;
+    document.querySelectorAll(".quantidade").forEach(cell => {
+        total += parseInt(cell.textContent, 10);
+    });
+    document.getElementById("totalVacinas").textContent = total;
+}
+
+// Função para filtrar vacinas
 function filtrarVacinas() {
     let filtro = document.getElementById("search").value.toLowerCase();
-    let linhas = document.getElementById("tabelaEstoque").getElementsByTagName("tr");
+    let linhas = document.getElementById("tabelaVacinas").getElementsByTagName("tr");
 
     for (let linha of linhas) {
         let colunas = linha.getElementsByTagName("td");
@@ -94,25 +132,6 @@ function filtrarVacinas() {
     }
 }
 
-function adicionarQuantidade(botao) {
-    let linha = botao.parentElement.parentElement;
-    let quantidadeCell = linha.querySelector(".quantidade");
-    let quantidade = parseInt(quantidadeCell.textContent, 10);
-    
-    quantidadeCell.textContent = quantidade + 1;
-    atualizarTotal();
-}
+// Carrega os dados ao iniciar
+document.addEventListener('DOMContentLoaded', atualizarTabelaVacinas);
 
-function removerVacina(botao) {
-    let linha = botao.parentElement.parentElement;
-    linha.remove();
-    atualizarTotal();
-}
-
-function atualizarTotal() {
-    let total = 0;
-    document.querySelectorAll(".quantidade").forEach(cell => {
-        total += parseInt(cell.textContent, 10);
-    });
-    document.getElementById("totalVacinas").textContent = total;
-}

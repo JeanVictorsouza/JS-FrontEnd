@@ -9,6 +9,7 @@ function loadPage(page) {
     if (page === "funcionarios") {
         renderFuncionarioPage();
     } else if (page === "sala_vacinas") {
+        window.location.href = 'salaVacina.html';
         renderVacinasPage();
     } else {
         contentDiv.innerHTML = `<h2>${page}</h2><p>Conteúdo da página ${page}.</p>`;

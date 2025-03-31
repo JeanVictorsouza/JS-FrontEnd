@@ -4,82 +4,37 @@ document.getElementById("menu-toggle").addEventListener("click", function() {
     document.body.classList.toggle("sidebar-active");
 });
 
-// Carrega dados do funcionário logado
-function carregarDadosFuncionario() {
-    const user = JSON.parse(localStorage.getItem('loggedInUser'));
-    if (user) {
-        document.getElementById('nomeFuncionario').textContent = user.name || 'Não informado';
-        document.getElementById('cpfFuncionario').textContent = user.cpf || 'Não informado';
-        document.getElementById('registroFuncionario').textContent = user.registro || 'Não informado';
-        
-        // Carrega os dados de vacinação específicos do funcionário
-        carregarDadosVacinas(user.id || user.cpf);
-    }
-}
-
-// Carrega dados de vacinação do funcionário
-function carregarDadosVacinas(funcionarioId) {
-    // Busca no localStorage ou em uma API os dados do funcionário
-    const todasVacinas = JSON.parse(localStorage.getItem('historicoVacinas')) || [];
-    const todosAgendamentos = JSON.parse(localStorage.getItem('agendamentosVacinas')) || [];
-    
-    // Filtra apenas as vacinas deste funcionário
-    const vacinasFuncionario = todasVacinas.filter(v => v.funcionarioId === funcionarioId);
-    const agendamentosFuncionario = todosAgendamentos.filter(a => a.funcionarioId === funcionarioId);
-    
-    // Preenche o histórico
-    const historicoTbody = document.getElementById('historicoVacinas');
+// Carrega os dados das vacinas
+function carregarDadosVacinas() {
+    const historicoTbody = document.getElementById("historicoVacinas");
     historicoTbody.innerHTML = '';
     
-    vacinasFuncionario.forEach(vacina => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${vacina.nome}</td>
-            <td>${vacina.dose}</td>
-            <td>${formatarData(vacina.data)}</td>
-            <td>${vacina.responsavel}</td>
-        `;
-        historicoTbody.appendChild(row);
-    });
+    const vacinas = JSON.parse(localStorage.getItem('vacinas')) || [];
     
-    // Preenche os agendamentos futuros
-    const proximasTbody = document.getElementById('proximasVacinas');
-    proximasTbody.innerHTML = '';
-    
-    const hoje = new Date().toISOString().split('T')[0];
-    const agendamentosFuturos = agendamentosFuncionario.filter(a => a.data >= hoje);
-    
-    if (agendamentosFuturos.length === 0) {
-        proximasTbody.innerHTML = `
+    if (vacinas.length === 0) {
+        historicoTbody.innerHTML = `
             <tr>
-                <td colspan="4" class="text-center">Nenhuma vacina agendada</td>
+                <td colspan="3" class="text-center">Nenhuma vacina cadastrada</td>
             </tr>
         `;
     } else {
-        agendamentosFuturos.forEach(ag => {
+        vacinas.forEach(vacina => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${ag.vacina}</td>
-                <td>${ag.dose}</td>
-                <td>${formatarData(ag.data)}</td>
-                <td>${ag.responsavel}</td>
+                <td>${vacina.nome}</td>
+                <td>${formatarData(vacina.data)}</td>
+                <td>${vacina.quantidade}</td>
             `;
-            proximasTbody.appendChild(row);
+            historicoTbody.appendChild(row);
         });
     }
 }
 
-// Formata data para exibição
+// Função para formatar data
 function formatarData(dataString) {
     const data = new Date(dataString);
     return data.toLocaleDateString('pt-BR');
 }
 
-// Logout
-function logout() {
-    localStorage.removeItem('loggedInUser');
-    window.location.href = 'index.html';
-}
-
-// Inicialização
-document.addEventListener('DOMContentLoaded', carregarDadosFuncionario);
+// Carrega os dados ao iniciar
+document.addEventListener('DOMContentLoaded', carregarDadosVacinas);
