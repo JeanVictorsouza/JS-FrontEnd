@@ -4,18 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro e Login</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
+    <!-- Botão para abrir a barra de navegação -->
     <button id="menu-toggle">☰</button>
 
-    <div id="sidebar">
+    <!-- Menu de navegação (toggle) - conteúdo -->
+    <nav id="sidebar">
         <h2>Menu</h2>
-        <ul>
-            <li><a href="index.html">Início</a></li>
-            <li><a href="login.html">Cadastro/Login</a></li>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="index.html" class="nav-link text-white">Início</a></li>
+            <li class ="nav-item"><a href="funcionarios.html" class="nav-link text-white">Funcionários</a></li>
+            <li class ="nav-item"><a href="salaVacina.html" class="nav-link text-white">Sala de Vacinas</a></li>
+            <li class ="nav-item"><a href="login.html" class="nav-link text-white">Login</a></li>
         </ul>
-    </div>
+
+        <style>
+            body{
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f4f4f4;
+                }
+
+                    /* Botão Toggle */
+                    #menu-toggle {
+                        position: relative;
+                        top: 0px;
+                        left: 0px;
+                        font-size: 24px;
+                        cursor: pointer;
+                        background: none;
+                        border: none;
+                        color: #036c4b;
+                        padding: 10px;
+                        z-index: 1000;
+                    }
+
+                    /* Sidebar (menu) */
+                    #sidebar {
+                        height: 100vh;
+                        background-color: #06c689;
+                        color: white;
+                        position: fixed;
+                        left: -250px;
+                        top: 0;
+                        transition: left 0.3s ease-in-out;
+                        padding: 60px;
+                    }
+
+                    #sidebar h2 {
+                        text-align: center;
+                        margin-top: 10px;
+                        font-size: 22px;
+                    }
+
+                    #sidebar ul {
+                        list-style: none;
+                        padding: 0;
+                    }
+
+                    #sidebar ul li {
+                        padding: 10px 0;
+                    }
+
+                    #sidebar ul li a {
+                        color: white;
+                        text-decoration: none;
+                    }
+
+                    #sidebar ul li a:hover {
+                        text-decoration: underline;
+                    }
+
+                    #sidebar.active {
+                        left: 0;
+                    }
+
+                    /* Conteúdo Principal */
+                    /* Ajuste inicial do conteúdo */
+                    .content {
+                        margin-left: 20px;
+                        padding: 20px;
+                        transition: margin-left 0.3s ease-in-out; /* Animação suave */
+                    }
+
+                    /* Quando o menu estiver ativo, o conteúdo se move para a direita */
+                    .sidebar-active .content {
+                        margin-left: 270px; /* Ajuste conforme a largura do menu */
+                    }
+        </style>
+    </nav>
 
     <div class="content">
         <h2>Bem-vindo!</h2>

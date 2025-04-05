@@ -1,4 +1,4 @@
-// Toggle do menu
+// Toggle bar function
 document.getElementById("menu-toggle").addEventListener("click", function() {
     document.getElementById("sidebar").classList.toggle("active");
     document.body.classList.toggle("sidebar-active");
