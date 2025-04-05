@@ -1,6 +1,5 @@
-// Toggle do menu
+// Toggle do menu - certifique-se que está exatamente assim:
 document.getElementById("menu-toggle").addEventListener("click", function() {
-    document.getElementById("sidebar").classList.toggle("active");
     document.body.classList.toggle("sidebar-active");
 });
 
@@ -12,12 +11,12 @@ function carregarDadosVacinas() {
     const vacinas = JSON.parse(localStorage.getItem('vacinas')) || [];
     
     if (vacinas.length === 0) {
-        historicoTbody.innerHTML = `
+        historicoTbody.innerHTML = ``;
             <tr>
                 <td colspan="3" class="text-center">Nenhuma vacina cadastrada</td>
             </tr>
-        `;
-    } else {
+    } 
+    else {
         vacinas.forEach(vacina => {
             const row = document.createElement('tr');
             row.innerHTML = `
