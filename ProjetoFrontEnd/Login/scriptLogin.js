@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
             message.style.color = "green";
             localStorage.setItem("loggedInUser", JSON.stringify(user));
             setTimeout(() => {
-                window.location.href = "index.html";
+                window.location.href = "../Index/index.html";
             }, 1000);
         } else {
             message.textContent = "E-mail ou senha incorretos!";
@@ -84,3 +84,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+localStorage.setItem('usuarioLogadoId', usuario.id);

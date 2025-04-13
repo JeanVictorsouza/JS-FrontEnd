@@ -1,0 +1,146 @@
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            transition: margin-left 0.3s ease-in-out;
+            overflow-x: hidden;
+        }
+
+        /* Botão Toggle */
+        #menu-toggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #036c4b;
+            padding: 10px;
+            z-index: 1100;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Sidebar (menu) */
+        #sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #06c689;
+            color: white;
+            position: fixed;
+            left: -250px;
+            top: 0;
+            transition: left 0.3s ease-in-out;
+            padding: 20px;
+            z-index: 900;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        #sidebar h2 {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 22px;
+        }
+
+        #sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #sidebar ul li {
+            padding: 10px 0;
+        }
+
+        #sidebar ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        #sidebar ul li a:hover {
+            text-decoration: underline;
+        }
+
+        #sidebar.active {
+            left: 0;
+        }
+
+        /* Conteúdo Principal */
+        .content {
+            margin-left: 20px;
+            padding: 20px;
+            transition: all 0.3s ease-in-out;
+            position: relative;
+            min-height: calc(100vh - 40px);
+        }
+
+        /* Quando o menu estiver ativo */
+        body.sidebar-active {
+            margin-left: 250px;
+        }
+
+        body.sidebar-active #menu-toggle {
+            left: 0px; /* Posição dentro da navbar */
+            color: white;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.sidebar-active .content {
+            margin-left: 20px;
+            width: calc(100% - 270px);
+        }
+
+        /* Ajuste para dispositivos móveis */
+        @media (max-width: 768px) {
+            body.sidebar-active {
+                margin-left: 0;
+                position: relative;
+            }
+            
+            body.sidebar-active .content {
+                transform: translateX(250px);
+                width: 100%;
+            }
+            
+            body.sidebar-active #menu-toggle {
+                left: 260px;
+                color: rgb(6, 158, 87);
+            }
+        }
+
+        /* Estilos para os botões de ação */
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .btn i {
+            pointer-events: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+    /* Estilo para linhas com vacina aplicada */
+    .vacina-aplicada {
+    border-left: 4px solid #4caf50 !important;
+    }
+
+    .vacina-aplicada td {
+    position: relative;
+    }
+
+    .vacina-aplicada td:first-child::before {
+    content: "✓";
+    color: #4caf50;
+    font-weight: bold;
+    margin-right: 8px;
+    }
