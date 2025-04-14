@@ -1,146 +1,275 @@
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            transition: margin-left 0.3s ease-in-out;
-            overflow-x: hidden;
-        }
+/* Estilos gerais */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    padding-top: 20px;
+}
 
-        /* Botão Toggle */
-        #menu-toggle {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            font-size: 24px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: #036c4b;
-            padding: 10px;
-            z-index: 1100;
-            transition: all 0.3s ease-in-out;
-        }
+/* Estilos para a sidebar */
+#sidebar {
+    width: 250px;
+    position: fixed;
+    left: -250px;
+    top: 0;
+    bottom: 0;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    background-color: #343a40;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    overflow-y: auto;
+}
 
-        /* Sidebar (menu) */
-        #sidebar {
-            width: 250px;
-            height: 100vh;
-            background-color: #06c689;
-            color: white;
-            position: fixed;
-            left: -250px;
-            top: 0;
-            transition: left 0.3s ease-in-out;
-            padding: 20px;
-            z-index: 900;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-        }
+#sidebar.active {
+    left: 0;
+}
 
-        #sidebar h2 {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 22px;
-        }
+#sidebar .nav-link {
+    color: #adb5bd;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    transition: all 0.3s;
+    padding: 10px 15px;
+}
 
-        #sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
+#sidebar .nav-link:hover, 
+#sidebar .nav-link.active {
+    color: white;
+    background-color: #495057;
+    text-decoration: none;
+}
 
-        #sidebar ul li {
-            padding: 10px 0;
-        }
+#sidebar .nav-link i {
+    width: 20px;
+    text-align: center;
+    margin-right: 10px;
+}
 
-        #sidebar ul li a {
-            color: white;
-            text-decoration: none;
-        }
+/* Estilos para o conteúdo principal */
+.content {
+    transition: all 0.3s ease;
+    padding-left: 20px;
+    min-height: 100vh;
+}
 
-        #sidebar ul li a:hover {
-            text-decoration: underline;
-        }
+#sidebar.active + .content {
+    padding-left: 270px;
+}
 
-        #sidebar.active {
-            left: 0;
-        }
+/* Botão do menu */
+#menu-toggle {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 999;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+}
 
-        /* Conteúdo Principal */
-        .content {
-            margin-left: 20px;
-            padding: 20px;
-            transition: all 0.3s ease-in-out;
-            position: relative;
-            min-height: calc(100vh - 40px);
-        }
+#sidebar.active ~ #menu-toggle {
+    left: 270px;
+}
 
-        /* Quando o menu estiver ativo */
-        body.sidebar-active {
-            margin-left: 250px;
-        }
+/* Estilos para tabelas */
+.table-responsive {
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    background-color: white;
+}
 
-        body.sidebar-active #menu-toggle {
-            left: 0px; /* Posição dentro da navbar */
-            color: white;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.table {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
 
-        body.sidebar-active .content {
-            margin-left: 20px;
-            width: calc(100% - 270px);
-        }
+.table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #0d6efd;
+    color: white;
+    z-index: 10;
+    vertical-align: middle;
+    padding: 12px 15px;
+}
 
-        /* Ajuste para dispositivos móveis */
-        @media (max-width: 768px) {
-            body.sidebar-active {
-                margin-left: 0;
-                position: relative;
-            }
-            
-            body.sidebar-active .content {
-                transform: translateX(250px);
-                width: 100%;
-            }
-            
-            body.sidebar-active #menu-toggle {
-                left: 260px;
-                color: rgb(6, 158, 87);
-            }
-        }
+.table tbody td {
+    vertical-align: middle;
+    padding: 10px 15px;
+}
 
-        /* Estilos para os botões de ação */
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.875rem;
-        }
+/* Estilos para cards */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    border: none;
+}
 
-        .btn i {
-            pointer-events: none;
-        }
+.card-header {
+    font-weight: 600;
+    border-radius: 8px 8px 0 0 !important;
+    padding: 15px 20px;
+    background-color: #0d6efd;
+    color: white;
+}
 
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
+/* Estilos para botões */
+.btn {
+    border-radius: 4px;
+    font-weight: 500;
+    padding: 8px 16px;
+    transition: all 0.2s;
+}
 
-    /* Estilo para linhas com vacina aplicada */
-    .vacina-aplicada {
-    border-left: 4px solid #4caf50 !important;
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.875rem;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5c636a;
+    border-color: #565e64;
+}
+
+/* Estilos para modais */
+.modal-content {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 15px 20px;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 15px 20px;
+}
+
+/* Estilos para formulários */
+.form-control, .form-select {
+    border-radius: 4px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+/* Estilos para vacinas aplicadas */
+.vacina-aplicada {
+    background-color: #e8f5e9 !important;
+    opacity: 0.9;
+}
+
+.vacina-aplicada:hover {
+    background-color: #d4edda !important;
+}
+
+/* Toast notifications */
+.toast {
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+}
+
+/* Ajustes para mobile */
+@media (max-width: 768px) {
+    #sidebar {
+        width: 220px;
     }
-
-    .vacina-aplicada td {
-    position: relative;
+    
+    #sidebar.active + .content {
+        padding-left: 20px;
+        position: relative;
+        left: 220px;
+        width: calc(100% - 220px);
     }
-
-    .vacina-aplicada td:first-child::before {
-    content: "✓";
-    color: #4caf50;
-    font-weight: bold;
-    margin-right: 8px;
+    
+    #sidebar.active ~ #menu-toggle {
+        left: 230px;
     }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .table thead th, 
+    .table tbody td {
+        padding: 8px 10px;
+    }
+    
+    .btn {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Efeito de hover nas linhas da tabela */
+#tabelaAgendamentos tr {
+    transition: background-color 0.2s ease;
+}
+
+#tabelaAgendamentos tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Estilo para o alerta de total */
+.alert-info {
+    background-color: #e7f1ff;
+    border-color: #d6e4ff;
+    color: #084298;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}

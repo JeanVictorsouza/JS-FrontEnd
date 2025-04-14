@@ -3,143 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro e Login</title>
-    <link rel="stylesheet" href="login.css">
+    <title>Home Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Botão para abrir a barra de navegação -->
-    <button id="menu-toggle">☰</button>
-
-    <!-- Menu de navegação (toggle) - conteúdo -->
+    <!-- Menu de navegação -->
     <nav id="sidebar">
         <h2>Menu</h2>
         <ul class="nav flex-column">
-            <li class="nav-item"><a href="../index/index.html" class="nav-link text-white">Início</a></li>
+            <li class="nav-item"><a href="index.html" class="nav-link text-white">Início</a></li>
             <li class="nav-item"><a href="../Funcionários/funcionarios.html" class="nav-link text-white">Funcionários</a></li>
-            <li class="nav-item"><a href="../vacinas/salaVacina.html" class="nav-link text-white">Sala de Vacinas</a></li> 
-            <li class="nav-item"><a href="../vacinas/vacinasHoje.html" class="nav-link text-white">Vacinas Futuras</a></li>
-            <li class="nav-item"><a href="../vacinas/cartaoVacinas.html" class="nav-link text-white">Cartão de Vacinas</a></li>
-            <li class="nav-item"><a href="login.html" class="nav-link text-white">Login</a></li>  
-        <li class="nav-item"><a href="#" class="nav-link text-white" onclick="logout()">Sair</a></li>
+            <li class="nav-item"><a href="../Vacinas/salaVacina.html" class="nav-link text-white">Sala de Vacinas</a></li>
+            <li class="nav-item"><a href="../Vacinas/vacinasHoje.html" class="nav-link text-white">Vacinas Futuras</a></li>
+            <li class="nav-item"><a href="../Vacinas/cartaoVacinas.html" class="nav-link text-white">Cartão de Vacinas</a></li>
+            <li class="nav-item"><a href="../Login/login.html" class="nav-link text-white">Login</a></li>
+            <li class="nav-item"><a href="#" class="nav-link text-white" onclick="logout()">Sair</a></li>
         </ul>
-
-        <style>
-            body{
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #f4f4f4;
-                }
-
-                    /* Botão Toggle */
-                    #menu-toggle {
-                        position: relative;
-                        top: 0px;
-                        left: 0px;
-                        font-size: 24px;
-                        cursor: pointer;
-                        background: none;
-                        border: none;
-                        color: #036c4b;
-                        padding: 10px;
-                        z-index: 1000;
-                    }
-
-                    /* Sidebar (menu) */
-                    #sidebar {
-                        height: 100vh;
-                        background-color: #06c689;
-                        color: white;
-                        position: fixed;
-                        left: -250px;
-                        top: 0;
-                        transition: left 0.3s ease-in-out;
-                        padding: 60px;
-                    }
-
-                    #sidebar h2 {
-                        text-align: center;
-                        margin-top: 10px;
-                        font-size: 22px;
-                    }
-
-                    #sidebar ul {
-                        list-style: none;
-                        padding: 0;
-                    }
-
-                    #sidebar ul li {
-                        padding: 10px 0;
-                    }
-
-                    #sidebar ul li a {
-                        color: white;
-                        text-decoration: none;
-                    }
-
-                    #sidebar ul li a:hover {
-                        text-decoration: underline;
-                    }
-
-                    #sidebar.active {
-                        left: 0;
-                    }
-
-                    /* Conteúdo Principal */
-                    /* Ajuste inicial do conteúdo */
-                    .content {
-                        margin-left: 20px;
-                        padding: 20px;
-                        transition: margin-left 0.3s ease-in-out; /* Animação suave */
-                    }
-
-                    /* Quando o menu estiver ativo, o conteúdo se move para a direita */
-                    .sidebar-active .content {
-                        margin-left: 270px; /* Ajuste conforme a largura do menu */
-                    }
-        </style>
     </nav>
 
-    <div class="content">
-        <h2>Bem-vindo!</h2>
-        <div class="button-container">
-            <button id="show-register">Cadastrar</button>
-            <button id="show-login">Entrar</button>
+    <!-- Conteúdo principal -->
+    <div class="content" id="content">
+        <!-- Botão para abrir o menu -->
+        <button id="menu-toggle" class="btn btn-primary">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <div class="container mt-4">
+            <h2>Bem-vindo</h2>
+            <p>Selecione uma opção no menu para continuar.</p>
+            
+            <!-- Dashboard -->
+            <div class="row mt-5" id="dashboard">
+                <!-- Cards serão inseridos pelo JavaScript -->
+            </div>
         </div>
-
-        <!-- Formulário de Cadastro -->
-        <form id="register-form" class="hidden">
-            <h3>Cadastro de Usuário</h3>
-            <label for="name">Nome:</label>
-            <input type="text" id="name" required>
-
-            <label for="email">E-mail:</label>
-            <input type="email" id="email" required>
-
-            <label for="password">Senha:</label>
-            <input type="password" id="password" required>
-
-            <label for="confirm-password">Confirme a Senha:</label>
-            <input type="password" id="confirm-password" required>
-
-            <button type="submit">Cadastrar</button>
-        </form>
-
-        <!-- Formulário de Login -->
-        <form id="login-form" class="hidden">
-            <h3>Login</h3>
-            <label for="login-email">E-mail:</label>
-            <input type="email" id="login-email" required>
-
-            <label for="login-password">Senha:</label>
-            <input type="password" id="login-password" required>
-
-            <button type="submit">Entrar</button>
-        </form>
-
-        <p id="message"></p>
     </div>
 
-    <script src="scriptLogin.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="navbar.js"></script>
+    <script src="scriptIndex.js"></script>
 </body>
 </html>

@@ -1,0 +1,61 @@
+/* Estilos gerais */
+body.sidebar-active {
+    margin-left: 250px;
+}
+
+.main-content {
+    padding: 20px;
+    transition: margin-left 0.3s;
+}
+
+#sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #06c689;
+    color: white;
+    position: fixed;
+    left: -250px;
+    top: 0;
+    transition: left 0.3s;
+    padding: 20px;
+    z-index: 1000;
+}
+
+#sidebar.active {
+    left: 0;
+}
+
+#menu-toggle {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #036c4b;
+    padding: 10px;
+    z-index: 1100;
+}
+
+/* Cards do dashboard */
+.card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-value {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Gráficos */
+canvas {
+    width: 100% !important;
+    height: 300px !important;
+}

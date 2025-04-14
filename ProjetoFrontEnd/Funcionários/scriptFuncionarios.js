@@ -1,158 +1,248 @@
-// Toggle bar function
-document.getElementById("menu-toggle").addEventListener("click", function() {
-    document.getElementById("sidebar").classList.toggle("active");
-    document.body.classList.toggle("sidebar-active");
-});
+class FuncionarioController {
+    constructor() {
+        this.funcionarios = [];
+        this.editId = null;
+        this.initElements();
+        this.initEventListeners();
+        this.loadFuncionarios();
+    }
 
-// Função para salvar no localStorage
-function salvarFuncionarios(funcionarios) {
-    localStorage.setItem('funcionarios', JSON.stringify(funcionarios));
-}
-
-// Função para carregar do localStorage
-function carregarFuncionarios() {
-    const dados = localStorage.getItem('funcionarios');
-    return dados ? JSON.parse(dados) : [];
-}
-
-// Função para renderizar a tabela
-function renderizarTabela() {
-    const tabela = document.getElementById("tabelaFuncionarios");
-    tabela.innerHTML = '';
-    
-    const funcionarios = carregarFuncionarios();
-    
-    funcionarios.forEach(funcionario => {
-        const newRow = tabela.insertRow();
-        
-        // Cria células
-        const cellCpf = newRow.insertCell(0);
-        const cellNome = newRow.insertCell(1);
-        const cellNascimento = newRow.insertCell(2);
-        const cellRegistro = newRow.insertCell(3);
-        const cellAcoes = newRow.insertCell(4);
-        
-        // Preenche células com dados
-        cellCpf.textContent = funcionario.cpf;
-        cellNome.textContent = funcionario.nome;
-        cellNascimento.textContent = funcionario.nascimento;
-        cellRegistro.textContent = funcionario.registro;
-        
-        // Cria botões de ação
-        const btnEditar = document.createElement('button');
-        btnEditar.className = 'btn btn-warning btn-sm me-1';
-        btnEditar.textContent = 'Editar';
-        btnEditar.addEventListener('click', function() {
-            editarFuncionario(this, funcionario.id);
-        });
-        
-        const btnExcluir = document.createElement('button');
-        btnExcluir.className = 'btn btn-danger btn-sm';
-        btnExcluir.textContent = 'Excluir';
-        btnExcluir.addEventListener('click', function() {
-            removerFuncionario(this, funcionario.id);
-        });
-        
-        // Adiciona botões à célula de ações
-        cellAcoes.appendChild(btnEditar);
-        cellAcoes.appendChild(btnExcluir);
-    });
-    
-    atualizarTotal();
-}
-
-document.getElementById("funcionarioForm").addEventListener("submit", function(event) {
-    event.preventDefault();
-    
-    let cpf = document.getElementById("cpf").value.trim();
-    let nome = document.getElementById("nome").value.trim();
-    let nascimento = document.getElementById("nascimento").value;
-    let registro = document.getElementById("registro").value.trim();
-    
-    const funcionarios = carregarFuncionarios();
-    const idEditando = document.getElementById("funcionarioForm").dataset.editId;
-    
-    if (idEditando) {
-        // Atualiza funcionário existente
-        const index = funcionarios.findIndex(f => f.id === idEditando);
-        if (index !== -1) {
-            funcionarios[index] = {
-                id: idEditando,
-                cpf,
-                nome,
-                nascimento,
-                registro
-            };
-            salvarFuncionarios(funcionarios);
-            document.getElementById("funcionarioForm").removeAttribute('data-edit-id');
-            document.querySelector("button[type='submit']").textContent = "Adicionar";
-        }
-    } else if (cpf && nome && nascimento && registro) {
-        // Adiciona novo funcionário
-        const novoFuncionario = {
-            id: Date.now().toString(),
-            cpf,
-            nome,
-            nascimento,
-            registro
+    initElements() {
+        this.elements = {
+            form: document.getElementById('funcionarioForm'),
+            cpfInput: document.getElementById('cpf'),
+            nomeInput: document.getElementById('nome'),
+            nascimentoInput: document.getElementById('nascimento'),
+            registroInput: document.getElementById('registro'),
+            searchInput: document.getElementById('search'),
+            tableBody: document.getElementById('tabelaFuncionarios'),
+            totalSpan: document.getElementById('totalFuncionarios'),
+            modal: new bootstrap.Modal('#confirmModal'),
+            modalMessage: document.getElementById('modal-message'),
+            modalConfirmBtn: document.getElementById('modal-confirm-btn')
         };
-        funcionarios.push(novoFuncionario);
-        salvarFuncionarios(funcionarios);
     }
-    
-    renderizarTabela();
-    document.getElementById("funcionarioForm").reset();
-});
 
-function filtrarFuncionarios() {
-    let filtro = document.getElementById("search").value.toLowerCase();
-    let linhas = document.getElementById("tabelaFuncionarios").rows;
-    const funcionarios = carregarFuncionarios();
-    
-    for (let i = 0; i < linhas.length; i++) {
-        let cpf = linhas[i].cells[0].textContent.toLowerCase();
-        let nome = linhas[i].cells[1].textContent.toLowerCase();
+    initEventListeners() {
+        this.elements.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        this.elements.searchInput.addEventListener('input', () => this.filterFuncionarios());
+        this.elements.modalConfirmBtn.addEventListener('click', () => this.confirmDelete());
         
-        linhas[i].style.display = (cpf.includes(filtro) || nome.includes(filtro)) ? "" : "none";
-    }
-}
-
-function removerFuncionario(botao, id) {
-    if (confirm("Tem certeza que deseja remover este funcionário?")) {
-        const funcionarios = carregarFuncionarios();
-        const novosFuncionarios = funcionarios.filter(f => f.id !== id);
-        salvarFuncionarios(novosFuncionarios);
-        renderizarTabela();
-    }
-}
-
-function editarFuncionario(botao, id) {
-    const funcionarios = carregarFuncionarios();
-    const funcionario = funcionarios.find(f => f.id === id);
-    
-    if (funcionario) {
-        // Preenche o formulário com os dados do funcionário
-        document.getElementById("cpf").value = funcionario.cpf;
-        document.getElementById("nome").value = funcionario.nome;
-        document.getElementById("nascimento").value = funcionario.nascimento;
-        document.getElementById("registro").value = funcionario.registro;
+        // Máscara de CPF
+        this.elements.cpfInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 3) value = value.replace(/^(\d{3})/, '$1.');
+            if (value.length > 7) value = value.replace(/^(\d{3})\.(\d{3})/, '$1.$2.');
+            if (value.length > 11) value = value.replace(/^(\d{3})\.(\d{3})\.(\d{3})/, '$1.$2.$3-');
+            e.target.value = value.substring(0, 14);
+        });
         
-        // Marca o formulário como em modo de edição
-        document.getElementById("funcionarioForm").dataset.editId = id;
-        document.querySelector("button[type='submit']").textContent = "Salvar Edição";
+        // Data máxima = hoje
+        this.elements.nascimentoInput.max = new Date().toISOString().split('T')[0];
+    }
+
+    loadFuncionarios() {
+        try {
+            const dados = localStorage.getItem('funcionarios');
+            this.funcionarios = dados ? JSON.parse(dados) : [];
+            this.renderTable();
+        } catch (error) {
+            console.error('Erro ao carregar funcionários:', error);
+            this.showAlert('Erro ao carregar dados', 'danger');
+        }
+    }
+
+    saveFuncionarios() {
+        localStorage.setItem('funcionarios', JSON.stringify(this.funcionarios));
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
         
-        // Rolagem suave até o formulário
-        document.getElementById("funcionarioForm").scrollIntoView({ behavior: 'smooth' });
+        if (!this.validateForm()) return;
+        
+        const funcionario = {
+            id: this.editId || Date.now().toString(),
+            cpf: this.elements.cpfInput.value,
+            nome: this.elements.nomeInput.value.trim(),
+            nascimento: this.elements.nascimentoInput.value,
+            registro: this.elements.registroInput.value.trim()
+        };
+
+        if (this.editId) {
+            this.updateFuncionario(funcionario);
+        } else {
+            this.addFuncionario(funcionario);
+        }
+
+        this.resetForm();
+        this.renderTable();
+    }
+
+    validateForm() {
+        let isValid = true;
+        
+        // Validação simples - pode ser expandida
+        if (!this.elements.cpfInput.value || this.elements.cpfInput.value.length < 11) {
+            isValid = false;
+        }
+        
+        if (!this.elements.nomeInput.value.trim()) {
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    addFuncionario(funcionario) {
+        this.funcionarios.push(funcionario);
+        this.saveFuncionarios();
+        this.showAlert('Funcionário adicionado com sucesso', 'success');
+    }
+
+    updateFuncionario(funcionario) {
+        const index = this.funcionarios.findIndex(f => f.id === this.editId);
+        if (index !== -1) {
+            this.funcionarios[index] = funcionario;
+            this.saveFuncionarios();
+            this.showAlert('Funcionário atualizado com sucesso', 'success');
+        }
+        this.editId = null;
+        this.elements.form.querySelector('button[type="submit"]').textContent = "Adicionar";
+    }
+
+    resetForm() {
+        this.elements.form.reset();
+        this.editId = null;
+    }
+
+    renderTable() {
+        this.elements.tableBody.innerHTML = '';
+        
+        if (this.funcionarios.length === 0) {
+            this.elements.tableBody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                        Nenhum funcionário cadastrado
+                    </td>
+                </tr>
+            `;
+            this.elements.totalSpan.textContent = '0';
+            return;
+        }
+        
+        this.funcionarios.forEach(funcionario => {
+            const row = this.elements.tableBody.insertRow();
+            row.innerHTML = `
+                <td>${this.formatCPF(funcionario.cpf)}</td>
+                <td>${funcionario.nome}</td>
+                <td>${this.formatDate(funcionario.nascimento)}</td>
+                <td>${funcionario.registro}</td>
+                <td class="text-center">
+                    <button class="btn btn-warning btn-sm me-1 edit-btn" data-id="${funcionario.id}">
+                        Editar
+                    </button>
+                    <button class="btn btn-danger btn-sm delete-btn" data-id="${funcionario.id}">
+                        Excluir
+                    </button>
+                </td>
+            `;
+        });
+        
+        // Adiciona eventos aos botões
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.prepareEdit(e));
+        });
+        
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.prepareDelete(e));
+        });
+        
+        this.elements.totalSpan.textContent = this.funcionarios.length;
+    }
+
+    prepareEdit(event) {
+        const id = event.currentTarget.getAttribute('data-id');
+        const funcionario = this.funcionarios.find(f => f.id === id);
+        
+        if (funcionario) {
+            this.elements.cpfInput.value = funcionario.cpf;
+            this.elements.nomeInput.value = funcionario.nome;
+            this.elements.nascimentoInput.value = funcionario.nascimento;
+            this.elements.registroInput.value = funcionario.registro;
+            
+            this.editId = id;
+            this.elements.form.querySelector('button[type="submit"]').textContent = "Salvar Edição";
+            this.elements.form.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    prepareDelete(event) {
+        const id = event.currentTarget.getAttribute('data-id');
+        const funcionario = this.funcionarios.find(f => f.id === id);
+        
+        if (funcionario) {
+            this.elements.modalMessage.textContent = `Tem certeza que deseja remover ${funcionario.nome}?`;
+            this.elements.modalConfirmBtn.setAttribute('data-id', id);
+            this.elements.modal.show();
+        }
+    }
+
+    confirmDelete() {
+        const id = this.elements.modalConfirmBtn.getAttribute('data-id');
+        this.deleteFuncionario(id);
+        this.elements.modal.hide();
+    }
+
+    deleteFuncionario(id) {
+        this.funcionarios = this.funcionarios.filter(f => f.id !== id);
+        this.saveFuncionarios();
+        this.renderTable();
+        this.showAlert('Funcionário removido com sucesso', 'success');
+    }
+
+    filterFuncionarios() {
+        const term = this.elements.searchInput.value.toLowerCase();
+        const rows = this.elements.tableBody.querySelectorAll('tr');
+        
+        rows.forEach(row => {
+            if (row.cells) {
+                const cpf = row.cells[0].textContent.toLowerCase();
+                const nome = row.cells[1].textContent.toLowerCase();
+                row.style.display = (cpf.includes(term) || nome.includes(term)) ? "" : "none";
+            }
+        });
+    }
+
+    formatCPF(cpf) {
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    }
+
+    formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('pt-BR');
+    }
+
+    showAlert(message, type) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+        alert.style.zIndex = '1100';
+        alert.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        document.body.appendChild(alert);
+        
+        // Remove o alerta após 3 segundos
+        setTimeout(() => {
+            alert.classList.add('fade');
+            setTimeout(() => alert.remove(), 150);
+        }, 3000);
     }
 }
 
-function atualizarTotal() {
-    const funcionarios = carregarFuncionarios();
-    document.getElementById("totalFuncionarios").textContent = funcionarios.length;
-}
-
-// Inicializa a tabela ao carregar a página
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("nascimento").max = new Date().toISOString().split("T")[0];
-    renderizarTabela();
+// Inicializa o controller quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', () => {
+    new FuncionarioController();
 });
