@@ -1,158 +1,222 @@
+// Configuração da API
+const API_URL = 'http://localhost:3000';
+
 // Toggle bar function
 document.getElementById("menu-toggle").addEventListener("click", function() {
     document.getElementById("sidebar").classList.toggle("active");
     document.body.classList.toggle("sidebar-active");
 });
 
-// Função para salvar no localStorage
-function salvarFuncionarios(funcionarios) {
-    localStorage.setItem('funcionarios', JSON.stringify(funcionarios));
+// Funções de API
+async function fetchFuncionarios() {
+    try {
+        const response = await fetch(`${API_URL}/funcionarios`);
+        if (!response.ok) throw new Error('Erro ao carregar funcionários');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro:', error);
+        mostrarErro('Falha ao carregar funcionários');
+        return [];
+    }
 }
 
-// Função para carregar do localStorage
-function carregarFuncionarios() {
-    const dados = localStorage.getItem('funcionarios');
-    return dados ? JSON.parse(dados) : [];
+async function salvarFuncionario(funcionario) {
+    try {
+        const method = funcionario.id ? 'PUT' : 'POST';
+        const url = funcionario.id 
+            ? `${API_URL}/funcionarios/${funcionario.id}`
+            : `${API_URL}/funcionarios`;
+
+        const response = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(funcionario)
+        });
+
+        if (!response.ok) throw new Error('Erro ao salvar funcionário');
+        return await response.json();
+    } catch (error) {
+        console.error('Erro:', error);
+        mostrarErro('Falha ao salvar funcionário');
+        throw error;
+    }
+}
+
+async function excluirFuncionario(id) {
+    try {
+        const response = await fetch(`${API_URL}/funcionarios/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Erro ao excluir funcionário');
+        return true;
+    } catch (error) {
+        console.error('Erro:', error);
+        mostrarErro('Falha ao excluir funcionário');
+        throw error;
+    }
 }
 
 // Função para renderizar a tabela
-function renderizarTabela() {
-    const tabela = document.getElementById("tabelaFuncionarios");
-    tabela.innerHTML = '';
-    
-    const funcionarios = carregarFuncionarios();
-    
-    funcionarios.forEach(funcionario => {
-        const newRow = tabela.insertRow();
+async function renderizarTabela() {
+    try {
+        const tabela = document.getElementById("tabelaFuncionarios");
+        tabela.innerHTML = '';
         
-        // Cria células
-        const cellCpf = newRow.insertCell(0);
-        const cellNome = newRow.insertCell(1);
-        const cellNascimento = newRow.insertCell(2);
-        const cellRegistro = newRow.insertCell(3);
-        const cellAcoes = newRow.insertCell(4);
+        const funcionarios = await fetchFuncionarios();
         
-        // Preenche células com dados
-        cellCpf.textContent = funcionario.cpf;
-        cellNome.textContent = funcionario.nome;
-        cellNascimento.textContent = funcionario.nascimento;
-        cellRegistro.textContent = funcionario.registro;
-        
-        // Cria botões de ação
-        const btnEditar = document.createElement('button');
-        btnEditar.className = 'btn btn-warning btn-sm me-1';
-        btnEditar.textContent = 'Editar';
-        btnEditar.addEventListener('click', function() {
-            editarFuncionario(this, funcionario.id);
+        funcionarios.forEach(funcionario => {
+            const newRow = tabela.insertRow();
+            
+            // Cria células
+            const cellCpf = newRow.insertCell(0);
+            const cellNome = newRow.insertCell(1);
+            const cellNascimento = newRow.insertCell(2);
+            const cellRegistro = newRow.insertCell(3);
+            const cellAcoes = newRow.insertCell(4);
+            
+            // Preenche células com dados
+            cellCpf.textContent = funcionario.cpf;
+            cellNome.textContent = funcionario.nome;
+            cellNascimento.textContent = formatarData(funcionario.nascimento);
+            cellRegistro.textContent = funcionario.registro;
+            
+            // Cria botões de ação
+            const btnEditar = document.createElement('button');
+            btnEditar.className = 'btn btn-warning btn-sm me-1';
+            btnEditar.textContent = 'Editar';
+            btnEditar.addEventListener('click', () => editarFuncionario(funcionario.id));
+            
+            const btnExcluir = document.createElement('button');
+            btnExcluir.className = 'btn btn-danger btn-sm';
+            btnExcluir.textContent = 'Excluir';
+            btnExcluir.addEventListener('click', () => confirmarExclusao(funcionario.id));
+            
+            // Adiciona botões à célula de ações
+            cellAcoes.appendChild(btnEditar);
+            cellAcoes.appendChild(btnExcluir);
         });
         
-        const btnExcluir = document.createElement('button');
-        btnExcluir.className = 'btn btn-danger btn-sm';
-        btnExcluir.textContent = 'Excluir';
-        btnExcluir.addEventListener('click', function() {
-            removerFuncionario(this, funcionario.id);
-        });
-        
-        // Adiciona botões à célula de ações
-        cellAcoes.appendChild(btnEditar);
-        cellAcoes.appendChild(btnExcluir);
-    });
-    
-    atualizarTotal();
+        atualizarTotal(funcionarios.length);
+    } catch (error) {
+        console.error('Erro ao renderizar tabela:', error);
+    }
 }
 
-document.getElementById("funcionarioForm").addEventListener("submit", function(event) {
+// Função para formatar data
+function formatarData(dataString) {
+    if (!dataString) return '';
+    const [ano, mes, dia] = dataString.split('-');
+    return `${dia}/${mes}/${ano}`;
+}
+
+// Função para mostrar erros
+function mostrarErro(mensagem) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+        ${mensagem}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    const container = document.querySelector('.container');
+    container.prepend(alertDiv);
+    
+    setTimeout(() => alertDiv.remove(), 5000);
+}
+
+// Evento de submit do formulário
+document.getElementById("funcionarioForm").addEventListener("submit", async function(event) {
     event.preventDefault();
     
-    let cpf = document.getElementById("cpf").value.trim();
-    let nome = document.getElementById("nome").value.trim();
-    let nascimento = document.getElementById("nascimento").value;
-    let registro = document.getElementById("registro").value.trim();
+    const cpf = document.getElementById("cpf").value.trim();
+    const nome = document.getElementById("nome").value.trim();
+    const nascimento = document.getElementById("nascimento").value;
+    const registro = document.getElementById("registro").value.trim();
     
-    const funcionarios = carregarFuncionarios();
-    const idEditando = document.getElementById("funcionarioForm").dataset.editId;
-    
-    if (idEditando) {
-        // Atualiza funcionário existente
-        const index = funcionarios.findIndex(f => f.id === idEditando);
-        if (index !== -1) {
-            funcionarios[index] = {
-                id: idEditando,
-                cpf,
-                nome,
-                nascimento,
-                registro
-            };
-            salvarFuncionarios(funcionarios);
-            document.getElementById("funcionarioForm").removeAttribute('data-edit-id');
-            document.querySelector("button[type='submit']").textContent = "Adicionar";
-        }
-    } else if (cpf && nome && nascimento && registro) {
-        // Adiciona novo funcionário
-        const novoFuncionario = {
-            id: Date.now().toString(),
-            cpf,
-            nome,
-            nascimento,
-            registro
-        };
-        funcionarios.push(novoFuncionario);
-        salvarFuncionarios(funcionarios);
+    if (!cpf || !nome || !nascimento || !registro) {
+        mostrarErro('Preencha todos os campos obrigatórios');
+        return;
     }
-    
-    renderizarTabela();
-    document.getElementById("funcionarioForm").reset();
+
+    const funcionario = {
+        cpf,
+        nome,
+        nascimento,
+        registro
+    };
+
+    const idEditando = this.dataset.editId;
+    if (idEditando) {
+        funcionario.id = idEditando;
+    }
+
+    try {
+        await salvarFuncionario(funcionario);
+        this.reset();
+        this.removeAttribute('data-edit-id');
+        document.querySelector("button[type='submit']").textContent = "Adicionar";
+        await renderizarTabela();
+    } catch (error) {
+        console.error('Erro no submit:', error);
+    }
 });
 
-function filtrarFuncionarios() {
-    let filtro = document.getElementById("search").value.toLowerCase();
-    let linhas = document.getElementById("tabelaFuncionarios").rows;
-    const funcionarios = carregarFuncionarios();
-    
-    for (let i = 0; i < linhas.length; i++) {
-        let cpf = linhas[i].cells[0].textContent.toLowerCase();
-        let nome = linhas[i].cells[1].textContent.toLowerCase();
+// Função para editar funcionário
+async function editarFuncionario(id) {
+    try {
+        const response = await fetch(`${API_URL}/funcionarios/${id}`);
+        if (!response.ok) throw new Error('Erro ao carregar funcionário');
+        const funcionario = await response.json();
         
-        linhas[i].style.display = (cpf.includes(filtro) || nome.includes(filtro)) ? "" : "none";
-    }
-}
-
-function removerFuncionario(botao, id) {
-    if (confirm("Tem certeza que deseja remover este funcionário?")) {
-        const funcionarios = carregarFuncionarios();
-        const novosFuncionarios = funcionarios.filter(f => f.id !== id);
-        salvarFuncionarios(novosFuncionarios);
-        renderizarTabela();
-    }
-}
-
-function editarFuncionario(botao, id) {
-    const funcionarios = carregarFuncionarios();
-    const funcionario = funcionarios.find(f => f.id === id);
-    
-    if (funcionario) {
-        // Preenche o formulário com os dados do funcionário
         document.getElementById("cpf").value = funcionario.cpf;
         document.getElementById("nome").value = funcionario.nome;
         document.getElementById("nascimento").value = funcionario.nascimento;
         document.getElementById("registro").value = funcionario.registro;
         
-        // Marca o formulário como em modo de edição
-        document.getElementById("funcionarioForm").dataset.editId = id;
+        document.getElementById("funcionarioForm").dataset.editId = funcionario.id;
         document.querySelector("button[type='submit']").textContent = "Salvar Edição";
-        
-        // Rolagem suave até o formulário
         document.getElementById("funcionarioForm").scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('Erro ao editar:', error);
+        mostrarErro('Falha ao carregar dados do funcionário');
     }
 }
 
-function atualizarTotal() {
-    const funcionarios = carregarFuncionarios();
-    document.getElementById("totalFuncionarios").textContent = funcionarios.length;
+// Função para confirmar exclusão
+async function confirmarExclusao(id) {
+    if (!confirm("Tem certeza que deseja remover este funcionário?")) return;
+    
+    try {
+        await excluirFuncionario(id);
+        await renderizarTabela();
+    } catch (error) {
+        console.error('Erro ao excluir:', error);
+    }
 }
 
-// Inicializa a tabela ao carregar a página
-document.addEventListener('DOMContentLoaded', function() {
+// Função de filtro
+function filtrarFuncionarios() {
+    const filtro = document.getElementById("search").value.toLowerCase();
+    const linhas = document.getElementById("tabelaFuncionarios").rows;
+    
+    for (let i = 0; i < linhas.length; i++) {
+        const cpf = linhas[i].cells[0].textContent.toLowerCase();
+        const nome = linhas[i].cells[1].textContent.toLowerCase();
+        linhas[i].style.display = (cpf.includes(filtro) || nome.includes(filtro)) ? "" : "none";
+    }
+}
+
+// Atualizar contador
+function atualizarTotal(total) {
+    document.getElementById("totalFuncionarios").textContent = total || 0;
+}
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("nascimento").max = new Date().toISOString().split("T")[0];
-    renderizarTabela();
+    document.getElementById("search").addEventListener('input', filtrarFuncionarios);
+    await renderizarTabela();
 });

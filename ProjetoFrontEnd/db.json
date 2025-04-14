@@ -1,0 +1,14 @@
+{
+  "agendamentos": [],
+  "funcionarios": [
+    {
+      "id": "a93f",
+      "cpf": "111222333-12",
+      "nome": "Marcos",
+      "nascimento": "1986-11-04",
+      "registro": "1"
+    }
+  ],
+  "vacinas": [],
+  "usuarios": []
+}
